@@ -23,4 +23,14 @@ class DiscoveryVisitor : ClassNode(Opcodes.ASM7) {
         return access and Opcodes.ACC_ABSTRACT != 0
     }
 
+    fun getAllSuperTypeNames(): List<String> {
+        // 所有 interface name
+        val superTypeNames = interfaces.map(String::toClassName).toMutableSet()
+        val superName = superName
+        // 父类 name（如抽象类）
+        if (superName != null && superName != "java/lang/Object") {
+            superTypeNames.add(superName.replace("/", "."))
+        }
+        return superTypeNames.toList()
+    }
 }

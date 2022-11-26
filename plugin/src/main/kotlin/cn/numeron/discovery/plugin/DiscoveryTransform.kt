@@ -76,7 +76,7 @@ class DiscoveryTransform(project: Project) : AbstractTransform(project) {
             implementationSet.add(
                 Implementation(
                     className,
-                    discoveryVisitor.interfaces.map(String::toClassName),
+                    discoveryVisitor.getAllSuperTypeNames(),
                     discoveryVisitor.order
                 )
             )
