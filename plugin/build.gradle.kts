@@ -15,7 +15,6 @@ tasks.withType<KotlinCompile> {
 dependencies {
     implementation(gradleApi())
 
-    implementation("commons-io:commons-io:2.11.0")
     implementation("com.android.tools.build:gradle:4.0.2")
 
     testImplementation("junit:junit:4.13.2")

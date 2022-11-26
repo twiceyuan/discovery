@@ -6,10 +6,9 @@ import com.android.build.api.transform.*
 import com.android.build.gradle.internal.pipeline.TransformManager
 import org.gradle.api.Project
 import org.gradle.api.logging.LogLevel
-import org.gradle.internal.impldep.org.apache.commons.io.FileUtils
 import java.io.File
 
-abstract class AbstractTransform(protected val project: Project) : Transform() {
+abstract class AbstractTransform(private val project: Project) : Transform() {
 
     override fun getInputTypes(): MutableSet<QualifiedContent.ContentType> {
         return TransformManager.CONTENT_CLASS
@@ -37,10 +36,10 @@ abstract class AbstractTransform(protected val project: Project) : Transform() {
                 )
                 if (isIncremental && jarInput.status == Status.REMOVED) {
                     //如果开启了增量编译并且当该jar被移除，则从输出目录中移除掉
-                    FileUtils.deleteDirectory(outputJarFile)
+                    outputJarFile.deleteRecursively()
                 } else if (jarInput.status != Status.NOTCHANGED || !outputJarFile.exists()) {
                     //如果没有开启增量编译，或者jar是其它状态，则复制到输出目录
-                    FileUtils.copyFile(jarInput.file, outputJarFile)
+                    jarInput.file.copyRecursively(outputJarFile)
                 }
                 if (!isIncremental || jarInput.status != Status.REMOVED) {
                     //在输出目录中处理jar
@@ -58,10 +57,10 @@ abstract class AbstractTransform(protected val project: Project) : Transform() {
                     for ((changedFile, status) in changedFiles) {
                         if (isIncremental && status == Status.REMOVED) {
                             //如果开启了增量编译并且当该文件被移除，则从输出目录中移除掉
-                            FileUtils.deleteDirectory(outputDir)
+                            outputDir.deleteRecursively()
                         } else if (status != Status.NOTCHANGED) {
                             //如果没有开启增量编译，并且文件不是未改变的状态，则复制到输出目录
-                            FileUtils.copyFile(changedFile, outputDir)
+                            changedFile.copyRecursively(outputDir)
                         }
                         if (!isIncremental || status != Status.REMOVED) {
                             //在输出目录中处理文件
@@ -70,7 +69,7 @@ abstract class AbstractTransform(protected val project: Project) : Transform() {
 
                     }
                 } else {
-                    FileUtils.copyDirectory(dirInput.file, outputDir)
+                    dirInput.file.copyRecursively(outputDir)
                     //在输出目录中处理本地class
                     processDirectory(dirInput, outputDir)
                 }
